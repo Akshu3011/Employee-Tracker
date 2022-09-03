@@ -175,7 +175,7 @@
 
     function addEmp()
     {
-        db.query("Select * from Employee e left join roles r On e.role_id=r.id",(err,res)=>{
+        db.query("Select e.first_name As first, e.last_name as last, e.id as emp_id, r.id as role_id, r.title as title from Employee e left join roles r On e.role_id=r.id",(err,res)=>{
             if(err) throw err
             inquirer.prompt(
                 [
@@ -197,7 +197,7 @@
                             var choiceArr=[];
                             for(let i=0;i<res.length;i++)
                             {
-                                choiceArr.push(res[i].id+" "+res[i].title)
+                                choiceArr.push(res[i].role_id+" "+res[i].title)
                             }
                             return choiceArr;
                         },
@@ -210,7 +210,7 @@
                             var choiceArr=[];
                             for(let i=0;i<res.length;i++)
                             {
-                                    choiceArr.push(res[i].id+" "+res[i].first_name+" "+res[i].last_name)
+                                    choiceArr.push(res[i].emp_id+" "+res[i].first+" "+res[i].last)
                             }
                             
                             return choiceArr;
@@ -241,7 +241,7 @@
 
     function updateEmp()
     {
-        db.query("Select * from Employee e left join roles r On e.role_id=r.id",(err,res)=>{
+        db.query("Select e.first_name As first, e.last_name as last, e.id as emp_id, r.id as role_id, r.title as title from Employee e left join roles r On e.role_id=r.id",(err,res)=>{
         if(err) throw err
         inquirer.prompt(
             [
@@ -253,7 +253,7 @@
                         var choiceArr=[];
                         for(let i=0;i<res.length;i++)
                         {
-                            choiceArr.push(res[i].id+" "+res[i].first_name+" "+res[i].last_name)
+                            choiceArr.push(res[i].first+" "+res[i].last)
                         }
                         return choiceArr;
                     },
@@ -267,7 +267,7 @@
                         var choiceArr=[];
                         for(let i=0;i<res.length;i++)
                         {
-                            choiceArr.push(res[i].id+" "+res[i].title)
+                            choiceArr.push(res[i].role_id+" "+res[i].title)
                         }
                         return choiceArr;
                     },
@@ -278,7 +278,7 @@
             const emp_id=ans.emp_id.split(" ");
             const updated_id=ans.updated.split(" ");
 
-            db.query("Update employee SET ? where id=?",[{role_id: updated_id[0]},emp_id[0]])
+            db.query("Update employee SET ? where first_name=?",[{role_id: updated_id[0]},emp_id[0]])
 
             console.log("Updated the Employee role to ", updated_id[1]);
             start();
