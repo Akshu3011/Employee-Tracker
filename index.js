@@ -126,9 +126,8 @@
     function addRole()
     {
         db.query("select * from department", (err,res)=>{
-            if(err) {
-            throw err;
-            console.log(err)}
+            if(err) throw err;
+           
             inquirer.prompt(
                 [ {
                         type: 'input',
@@ -176,34 +175,68 @@
 
     function addEmp()
     {
-       
-        inquirer.prompt(
-            [
-                {
-                    type: 'input',
-                    name:'fname',
-                    message:"What is the first name of employee?",
-                },
-                {
-                    type: 'input',
-                    name:'laname',
-                    message:"What is the last name of employee?",
-                },
-                {
-                    type: 'list',
-                    name:'role',
-                    message:"What is Employees role?",
-                    choices:[]
-                },
-                {
-                    type: 'list',
-                    name:'dept',
-                    message:"Who is Employees's manager?",
-                    choices:[]
+        db.query("Select * from Employee e left join roles r On e.role_id=r.id",(err,res)=>{
+            if(err) throw err
+            inquirer.prompt(
+                [
+                    {
+                        type: 'input',
+                        name:'fname',
+                        message:"What is the first name of employee?",
+                    },
+                    {
+                        type: 'input',
+                        name:'lname',
+                        message:"What is the last name of employee?",
+                    },
+                    {
+                        type: 'list',
+                        name:'role',
+                        message:"What is Employees role?",
+                        choices:()=>{
+                            var choiceArr=[];
+                            for(let i=0;i<res.length;i++)
+                            {
+                                choiceArr.push(res[i].id+" "+res[i].title)
+                            }
+                            return choiceArr;
+                        },
+                    },
+                    {
+                        type: 'list',
+                        name:'manager',
+                        message:"Who is Employees's manager?",
+                        choices:()=>{
+                            var choiceArr=[];
+                            for(let i=0;i<res.length;i++)
+                            {
+                                    choiceArr.push(res[i].id+" "+res[i].first_name+" "+res[i].last_name)
+                            }
+                            
+                            return choiceArr;
+                        },
+    
+                    },
+            
+            ]).then(ans =>{
 
-                },
-        
-        ])
+                const manager_id=ans.manager.split(" ");
+                const role_id=ans.role.split(" ");
+
+                db.query("Insert into employee SET ?",{
+                    first_name:ans.fname,
+                    last_name: ans.lname,
+                    role_id: role_id[0],
+                    manager_id: manager_id[0]
+                }, (err)=>{
+                    if(err) throw err;
+                    console.log("Employee "+ ans.fname +" added successfully");
+                    start();
+                })
+            })
+    
+        })
+       
     }
 
     function updateEmp()
