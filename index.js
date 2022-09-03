@@ -80,10 +80,18 @@ function viewAllDept()
 }
 function viewAllEmp()
 {
-    db.query("Select * from employee", (err,res)=> {
+    db.query("Select e.id as ID, e.first_name as First, e.last_name as Last, r.title As Role, r.salary as Salary, m.last_name as Manager, d.name as Deparment from employee e left join employee m  ON e.manager_id=m.id Left join roles r ON e.role_id=r.id Left join department d ON r.department_id = d.id", (err,res)=> {
         if(err) throw err;
         console.table(res);
         start();        
         })
 }
 
+function viewAllRoles()
+{
+    db.query("Select * from roles left join department on roles.department_id = department.id", (err,res)=> {
+        if(err) throw err;
+        console.table(res);
+        start();        
+        })
+}
