@@ -241,21 +241,48 @@
 
     function updateEmp()
     {
+        db.query("Select * from Employee e left join roles r On e.role_id=r.id",(err,res)=>{
+        if(err) throw err
         inquirer.prompt(
             [
                 {
                     type: 'list',
-                    name:'dept',
+                    name:'emp_id',
                     message:"Which employees role do you want to update?",
-                    choices:[]
+                    choices:()=>{
+                        var choiceArr=[];
+                        for(let i=0;i<res.length;i++)
+                        {
+                            choiceArr.push(res[i].id+" "+res[i].first_name+" "+res[i].last_name)
+                        }
+                        return choiceArr;
+                    },
 
                 },
                 {
                     type: 'list',
-                    name:'dept',
+                    name:'updated',
                     message:"Which role do you want to assign the selected employee?",
-                    choices:[]
+                    choices:()=>{
+                        var choiceArr=[];
+                        for(let i=0;i<res.length;i++)
+                        {
+                            choiceArr.push(res[i].id+" "+res[i].title)
+                        }
+                        return choiceArr;
+                    },
 
                 },
-        ])
+        ]).then(ans =>{
+
+            const emp_id=ans.emp_id.split(" ");
+            const updated_id=ans.updated.split(" ");
+
+            db.query("Update employee SET ? where id=?",[{role_id: updated_id[0]},emp_id[0]])
+
+            console.log("Updated the Employee role to ", updated_id[1]);
+            start();
+        }
+        )
     }
+)}
