@@ -72,7 +72,7 @@ function start(){
 
 function viewAllDept()
 {
-    db.query("Select * from department", (err,res)=> {
+    db.query("Select id AS ID, name AS Deparments from department", (err,res)=> {
         if(err) throw err;
         console.table(res);
         start();        
@@ -89,9 +89,31 @@ function viewAllEmp()
 
 function viewAllRoles()
 {
-    db.query("Select * from roles left join department on roles.department_id = department.id", (err,res)=> {
+    db.query("Select r.id as ID, r.title AS Role, d.name AS Department, r.salary AS Salary from roles r left join department  d ON r.department_id = d.id", (err,res)=> {
         if(err) throw err;
         console.table(res);
         start();        
         })
+}
+
+function addDept()
+{
+    inquirer.prompt(
+        {
+            type: 'input',
+            name:'department',
+            message:"What is the name of department?",
+           
+        }
+       
+    
+).then(ans =>{
+    db.query("Insert into department Values (Default,?)", ans.department, (err)=>{
+        if(err) throw err;
+        console.log("Department updated with "+ ans.department);
+        start();
+    })
+}
+
+)
 }
