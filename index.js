@@ -3,6 +3,10 @@ const mysql = require('mysql2');
 const ctable = require('console.table');
 
 
+const dept_data=["Engineering",
+"Finance",
+"Legal",
+"Sales"];
 // create the connection, specify bluebird as Promise
 const db = mysql.createConnection(
     {
@@ -111,6 +115,45 @@ function addDept()
     db.query("Insert into department Values (Default,?)", ans.department, (err)=>{
         if(err) throw err;
         console.log("Department updated with "+ ans.department);
+        dept_data.push(ans.department);
+        start();
+    })
+}
+
+)
+}
+
+function addRole()
+{
+    inquirer.prompt(
+       [ {
+            type: 'input',
+            name:'role',
+            message:"What is the name of role?",
+        },
+        {
+            type: 'input',
+            name:'salary',
+            message:"What is the salary of role?",
+        },
+        {
+            type: 'input',
+            name:'dept',
+            message:"Which department does the role belong to? Please select the id starting from 1 for the respective departments:  "+dept_data,
+            Validate: (value)=>{
+                (!isNaN(value))? true : false;
+            }
+        },
+    ]
+).then(ans =>{
+    
+    db.query("Insert into roles SET ?",{
+        title:ans.role,
+        salary:ans.salary,
+        department_id: ans.dept
+    }, (err)=>{
+        if(err) throw err;
+        console.log("Employee Roles updated with "+ ans.role);
         start();
     })
 }
